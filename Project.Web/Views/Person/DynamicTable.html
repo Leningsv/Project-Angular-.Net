@@ -1,0 +1,175 @@
+﻿<div class="panel panel-primary">
+    <div class="panel-heading">
+        <div class="form-inline" role="form">
+            <div class="form-group">
+                <!--Autor: Lenin - Select desde una array-->
+                <select id="idPagination" ng-change="changeAction()" ng-model="pageSize" class="form-control"
+                        ng-options="item as item for item in pageSizes"></select> -
+            </div>
+            <div class="form-group">
+                <input class="form-control" type="search" placeholder="Buscar..."
+                       ng-change="currentPage=0" ng-model="searchComplete" /> -
+            </div>
+            <div class="form-group">
+                Pagina Numero: {{currentPage +1}} -
+            </div>
+            <div class="form-group">
+                Pagina Totales: {{pageNumber}} -
+            </div>
+            <div class="form-group">
+                Numero de Elementos: {{numberElements}} -
+            </div>
+            <div class="form-group">
+                Lista Personas
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        <div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th class="text-center"><a ng-click="boolId=ordering(boolId,'id')">Id</a></th>
+                        <th class="text-center"><a ng-click="boolFirstName=ordering(boolFirstName,'firstName')">Nombre</a></th>
+                        <th class="text-center"><a ng-click="boolLastName=ordering(boolLastName,'lastName')">Apellido</a></th>
+                        <th class="text-center"><a ng-click="boolCedula=ordering(boolCedula,'cedula')">Cedula</a></th>
+                        <th class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody class="text-center">
+                    <tr>
+                        <td>
+                            -
+                        </td>
+                        <td>
+                            <div class="col-xs-6 col-xs-offset-3">
+                                <input class="form-control" type="text" ng-model="personInsert.firstName" placeholder="Nombre" />
+                            </div>                            
+                        </td>
+                        <td>
+                            <div class="col-xs-6 col-xs-offset-3">
+                                <input class="form-control" type="text" ng-model="personInsert.lastName" placeholder="Apellido" />
+                            </div>                        
+                        </td>
+                        <td>
+                            <div class="col-xs-6 col-xs-offset-3">
+                                <input class="form-control" type="text" ng-model="personInsert.cedula" placeholder="Cedula" />
+                            </div>                        
+                        </td>
+                        <td>
+                            <div class="form-inline">
+                                <div class="btn-group form-group">
+                                    <button type="button" class="btn btn-primary" ng-click="insertPerson(personInsert)">Registrar</button>
+                                    <button type="button" class="btn btn-default" ng-click="cleanPersonInsert()">Limpiar</button>
+                                </div>
+                                <div class="form-group">
+                                    <label class="label label-{{personInsert.styleInsert}}">{{personInsert.stateInsert}}</label>
+                                </div>
+                            </div>                                                
+                        </td>
+                    </tr>                    
+                    <tr ng-repeat="item in (result=people | orderBy: ord: ordStatus | filter:search)"
+                        ng-if="$index >= (currentPage * pageSize) &&  $index<((currentPage+1)*pageSize)">
+                        <td>
+                            <div ng-if="!item.stateUpdate">
+                                {{item.id}}
+                            </div>
+                            <div ng-if="item.stateUpdate">
+                                {{item.id}}
+                            </div>
+                        </td>
+                        <td>
+                            <div ng-if="!item.stateUpdate">
+                                {{item.firstName}}
+                            </div>
+                            <div class="col-xs-6 col-xs-offset-3" ng-if="item.stateUpdate">
+                                <input type="text" class="form-control text-center" ng-model="item.firstName" />
+                            </div>
+                        </td>
+                        <td>
+                            <div ng-if="!item.stateUpdate">
+                                {{item.lastName}}
+                            </div>
+                            <div class="col-xs-6 col-xs-offset-3" ng-if="item.stateUpdate">
+                                <input type="text" class="form-control text-center" ng-model="item.lastName" />
+                            </div>
+                        </td>
+                        <td>
+                            <div ng-if="!item.stateUpdate">
+                                {{item.cedula}}
+                            </div>
+                            <div class="col-xs-6 col-xs-offset-3" ng-if="item.stateUpdate">
+                                <input type="text" class="form-control text-center" ng-model="item.cedula" ng-change="changeStateUpdate(item)"/>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="form-inline">
+                                <!-- Single button -->
+                                <div class="btn-group form-group" ng-if="!item.stateUpdate">
+                                    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        Action <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li><a data-toggle="modal" ng-click="loadPerson(item)" data-target="#myModalDetail">Detalles</a></li>
+                                        <li><a data-toggle="modal" ng-click="item.stateUpdate = true" data-target="#myModalUpdate">Actualizar</a></li>
+                                        <li role="separator" class="divider"></li>
+                                        <li><a ng-click="deletePerson(item)">Eliminar</a></li>
+                                    </ul>
+                                </div>
+                                <div class="btn-group form-group" ng-if="item.stateUpdate">
+                                    <button type="button" class="btn btn-primary" ng-click="updatePerson(item)">Guardar</button>
+                                    <button type="button" class="btn btn-default" ng-click="cleanPersonUpdate(item)">Salir</button>
+                                </div>
+                                <div class="form-group" ng-if="item.stateUpdate">
+                                    <label class="label label-{{item.styleUpdateMessage}}">{{item.stateUpdateMessage}}</label>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="text-center">
+            <div class="btn-group" role="group" aria-label="...">
+                <button type="button" class="btn btn-default" ng-click="currentPage = 0">Inicio</button>
+                <button type="button" class="btn btn-default" ng-click="paging(0)">Anterior</button>
+                <button type="button" class="btn btn-default" ng-click="paging(1)">Siguiente</button>
+                <button type="button" class="btn btn-default" ng-click="currentPage=pageNumber-1">Fin</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal Details-->
+<div class="modal fade" id="myModalDetail" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Detalles Persona</h4>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="txtId">Id:</label>
+                        <input id="txtId" class="form-control" type="text" ng-model="personDetail.id" disabled />
+                    </div>
+                    <div class="form-group">
+                        <label for="txtFirstName">Nombre:</label>
+                        <input id="txtFirstName" class="form-control" type="text" ng-model="personDetail.firstName" disabled />
+                    </div>
+                    <div class="form-group">
+                        <label for="txtLastName">Apellido:</label>
+                        <input id="txtLastName" class="form-control" type="text" ng-model="personDetail.lastName" disabled />
+                    </div>
+                    <div class="form-group">
+                        <label for="txtCedula">Cadula:</label>
+                        <input id="txtCedula" class="form-control" type="text" ng-model="personDetail.cedula" disabled />
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
